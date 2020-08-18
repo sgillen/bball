@@ -8,10 +8,22 @@ from stable_baselines.common import make_vec_env
 import os
 import time
 from seagul.envs.matlab import BBall3Env
-
-num_steps = int(5e5)
-base_dir = "data2/"
+import pickle
+import torch
+num_steps = int(1e5)
+base_dir = "data_ppo/"
 trial_name = input("Trial name: ")
+
+
+def reward_fn(state, action):
+    return torch.tensor(1.0)
+
+
+env_config = {
+    'init_state': (0, 0, -pi / 2, .1, .75, 0, 0, 0, 0, 0),
+    'reward_fn': reward_fn,
+    'max_torque' : 25.0
+}
 
 trial_dir = base_dir + trial_name + "/"
 base_ok = input("run will be saved in " + trial_dir + " ok? y/n")
@@ -20,18 +32,9 @@ if base_ok == "n":
     exit()
 
 
+
+
 def run_stable(num_steps, save_dir):
-    def reward_fn(state, action):
-        return state[3]
-
-    def done_criteria(state):
-        return state[4] < 0
-
-    env_config = {
-        'init_state' : (-pi / 4, 0, 3 * pi / 4, 0.025, .5, 0, 0, 0, 0, 0),
-        'reward_fn' : reward_fn,
-        'done_criteria' : done_criteria
-    }
 
     env = make_vec_env(BBall3Env, n_envs=1, monitor_dir=save_dir, env_kwargs=env_config)
 
@@ -59,10 +62,13 @@ def run_stable(num_steps, save_dir):
 if __name__ == "__main__":
 
     start = time.time()
-
     proc_list = []
+
+    os.makedirs(trial_dir, exist_ok=False)
+    with open(trial_dir + "config.pkl", "wb") as config_file:
+        pickle.dump(env_config, config_file)
+
     for seed in np.random.randint(0, 2 ** 32, 8):
-        #    run_stable(int(8e4), "./data/walker/" + trial_name + "_" + str(seed))
 
         save_dir = trial_dir + "/" + str(seed)
         os.makedirs(save_dir, exist_ok=False)
@@ -78,6 +84,7 @@ if __name__ == "__main__":
     for p in proc_list:
         print("joining")
         p.join()
+
 
     print(f"experiment complete, total time: {time.time() - start}, saved in {save_dir}")
 
