@@ -21,12 +21,19 @@ base_dir = "data_ars/"
 trial_name = input("Trial name: ")
 torch.set_default_dtype(torch.float32)
 
+
 def reward_fn(state, action):
-    return torch.tensor(1.0)
+    xpen = np.clip(-(state[4] - .45)**2, -1, 0)
+    #ypen = np.clip(-(state[5] - 2)**2, -1, 0)
+    ypen = 0.0
+    alive = 2.0
+    return xpen + ypen + alive
+
 
 env_config = {
-    'init_state': (0, 0, 3 * pi / 4, 0.0, 1.0, 0, 0, 0, 0, 0),
+    'init_state': (0, 0, -pi / 2, .15, .75, 0, 0, 0, 0, 0),
     'reward_fn': reward_fn,
+    'max_torque':  1.0
 }
 
 trial_dir = base_dir + trial_name + "/"
@@ -51,7 +58,7 @@ for seed in np.random.randint(0, 2**32, 4):
     }
 
     agent = ARSAgent(**alg_config)
-    agent.learn(int(1e5))
+    agent.learn(int(1e2))
 
     torch.save(agent, f"{trial_dir}{seed}.agent")
 

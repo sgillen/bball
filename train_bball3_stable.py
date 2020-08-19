@@ -10,19 +10,25 @@ import time
 from seagul.envs.matlab import BBall3Env
 import pickle
 import torch
+import signal
+
 num_steps = int(1e5)
 base_dir = "data_ppo/"
 trial_name = input("Trial name: ")
 
 
 def reward_fn(state, action):
-    return torch.tensor(1.0)
+    xpen = np.clip(-(state[4] - .45)**2, -1, 0)
+    #ypen = np.clip(-(state[5] - 2)**2, -1, 0)
+    ypen = 0.0
+    alive = 2.0
+    return xpen + ypen + alive
 
 
 env_config = {
-    'init_state': (0, 0, -pi / 2, .1, .75, 0, 0, 0, 0, 0),
+    'init_state': (0, 0, -pi / 2, .15, .75, 0, 0, 0, 0, 0),
     'reward_fn': reward_fn,
-    'max_torque' : 25.0
+    'max_torque':  1.0
 }
 
 trial_dir = base_dir + trial_name + "/"
@@ -30,8 +36,6 @@ base_ok = input("run will be saved in " + trial_dir + " ok? y/n")
 
 if base_ok == "n":
     exit()
-
-
 
 
 def run_stable(num_steps, save_dir):
@@ -42,8 +46,8 @@ def run_stable(num_steps, save_dir):
                  env,
                  verbose=2,
                  seed=int(seed),
-                 # normalize= True,
-                 # policy= 'MlpPolicy',
+                 # normalize = True,
+                 # policy = 'MlpPolicy',
                  n_steps=1024,
                  nminibatches=64,
                  lam=0.95,
@@ -84,7 +88,6 @@ if __name__ == "__main__":
     for p in proc_list:
         print("joining")
         p.join()
-
 
     print(f"experiment complete, total time: {time.time() - start}, saved in {save_dir}")
 
