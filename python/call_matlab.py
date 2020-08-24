@@ -1,6 +1,6 @@
 # %%
 from math import pi
-from seagul.envs.matlab import BBallEnv, BBall3Env
+from bball3_env import BBall3Env
 
 
 def reward_fn(state, action):
@@ -14,14 +14,13 @@ def done_criteria(state):
 env_config = {
     'init_state' : (0, 0, 3 * pi / 4, .25, 1.0, 0, 0, 0, 0, 0),
     'reward_fn' : reward_fn,
-    'done_criteria' : done_criteria
 }
 
 
 env = BBall3Env(**env_config)
 env.reset()
 
-for _ in range(25):
+for _ in range(3):
     obs, reward, done, obs_dict = env.step([1,1,-2])
     env.animate(obs_dict["tout"], obs_dict["xout"])
     if done:
