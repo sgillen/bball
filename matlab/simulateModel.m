@@ -21,10 +21,14 @@ curX = X0;
 
 
 n = 4; % Number of bounces
-for i = 1:1:n
+for i = 1:n
     replayX = [];
     [t, X_desired, ee_desired, ee_dot_desired, error_in_final_desired] = planning(X0, h_b_desired, dt, initialBounce);
-    for j = 1:size(X_desired,1)
+    curX  = X_desired(1,:)'; 
+    for j = 2:size(X_desired,1)
+
+        replayX = [replayX curX];
+
         X_des = X_desired(j, :)';
         U = controller(X_des,curX);
         [tout, xout] = integrateODE([0 dt], curX, dt, U);
@@ -33,13 +37,11 @@ for i = 1:1:n
             curX = impact(preImpactState');
             initialBounce = 0;
             X0 = curX;
-            break
-    
+            %break
         else
             curX = xout(2,:)';
         end
 
-        replayX = [replayX curX];
      
     end
     animate(1:1:size(replayX,2), replayX');
@@ -47,5 +49,3 @@ for i = 1:1:n
    
 
 end
-
-animate(0:dt:size(replayX,1), replayX);

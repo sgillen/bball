@@ -24,10 +24,10 @@ impLinkSlope = (y3 - y2)./(x3 - x2);
 impLinkIntercept = y3 - impLinkSlope.*x3;
 
 %% Detecting impacts
-distanceToImpLink = abs(yb(2) - xb(2)*impLinkSlope(2) - impLinkIntercept(2))/sqrt(1 + impLinkSlope(2)^2);
- if (distanceToImpLink < rb)
+distanceToImpLink = abs(yb - xb.*impLinkSlope - impLinkIntercept)./sqrt(1 + impLinkSlope.^2);
+ if (distanceToImpLink(2) < rb)
      if ((x2(2) < xb(2) && xb(2) < x3(2)) || (x3(2) < xb(2) && xb(2) < x2(2)))
-         impactTime = interp1([0 distanceToImpLink], tout, rb,'PCHIP');
+         impactTime = interp1([distanceToImpLink(1) distanceToImpLink(2)], tout, rb,'PCHIP');
          preImpactState = interp1(tout,xout,impactTime,'PCHIP');
     end
 end
