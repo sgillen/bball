@@ -12,8 +12,8 @@ import pickle
 import torch
 import signal
 
-num_steps = int(5e5)
-base_dir = os.path.dirname(__file__) + "/data_ppo_wc/"
+num_steps = int(1e6)
+base_dir = os.path.dirname(__file__) + "/data_ppo/"
 trial_name = input("Trial name: ")
 
 
@@ -21,10 +21,10 @@ def reward_fn(state, action):
     xpen = np.clip(-(state[3] - .15)**2, -1, 0)
     #xpen = 0.0
 
-    ypen = np.clip(-(state[4] - 1)**2, -4, 0)
+    ypen = np.clip(-(state[4] - 1.2)**2, -4, 0)
     #ypen = 0.0
 
-    alive = 4.0
+    alive = 5.0
     return xpen + ypen + alive
   #  return -(state[4] - 1)**2 + alive
 
@@ -63,7 +63,7 @@ def run_stable(num_steps, save_dir):
                  cliprange_vf=-1,
                  )
 
-    num_epochs = 100
+    num_epochs = 1
 
     for epoch in range(num_epochs):
 

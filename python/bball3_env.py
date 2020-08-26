@@ -10,7 +10,7 @@ import seagul.envs.matlab.bball3_src
 import os
 
 class BBall3Env(core.Env):
-    """ Connects to nihars bouncing ball matlab code
+    """ Connects to nihars bouncing ball matlab src
 
     states are
     [0] lower link angle (rad) (absolute?)

@@ -22,13 +22,16 @@ import numpy as np
 from numpy import pi
 
 
-def reward_fn(state, action):
-    xpen = np.clip(-(state[3] - .15) ** 2, -2, 0)
-    ypen = np.clip(-(state[4] - 1.2) ** 2, -2, 0)
-    # ypen = 0.0
-    alive = 4.0
-    return xpen + ypen + alive
 
+def reward_fn(state, action):
+    xpen = np.clip(-(state[3] - .15)**2, -1, 0)
+    #xpen = 0.0
+
+    ypen = np.clip(-(state[4] - 1.2)**2, -4, 0)
+    #ypen = 0.0
+
+    alive = 5.0
+    return xpen + ypen + alive
 
 env_config = {
     'init_state': (0, 0, -pi / 2, .15, 1.2, 0, 0, 0, 0, 0),
@@ -48,7 +51,7 @@ env_name = "bball3-v1"
 if __name__ == "__main__":
 
     num_steps = int(1e5)
-    base_dir = os.path.dirname(__file__) + "/data_ppo_wc/"
+    base_dir = os.path.dirname(__file__) + "/data_sac/"
     trial_name = input("Trial name: ")
     torch.set_default_dtype(torch.float32)
 
