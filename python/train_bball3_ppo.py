@@ -13,7 +13,8 @@ import torch
 import signal
 
 num_steps = int(1e6)
-base_dir = os.path.dirname(__file__) + "/data_ppo/"
+base_dir = os.path.dirname(os.path.abspath(__file__)) + "/data_ppo/"
+print(base_dir)
 trial_name = input("Trial name: ")
 
 
