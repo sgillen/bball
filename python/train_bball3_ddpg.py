@@ -32,7 +32,7 @@ def reward_fn(state, action):
     return -(state[4] - 2)**2 + alive
 
 env_config = {
-    'init_state': (0, 0, -pi / 2, .15, 1.2, 0, 0, 0, 0, 0),
+    'init_state': (0, 0, -pi / 2, .15, .75, 0, 0, 0, 0, 0),
     'reward_fn': reward_fn,
     'max_torque':  5.0
 }
