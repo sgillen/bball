@@ -7,6 +7,7 @@ import torch
 import pickle
 import os
 from bball3_env import BBall3Env
+from bball3_mj_env import BBall3MJEnv
 
 from torch.multiprocessing import Pool
 
@@ -22,6 +23,7 @@ import torch.nn as nn
 import numpy as np
 from numpy import pi
 import inspect
+
 
 base_dir = os.path.dirname(__file__) + "/data_sac/"
 
@@ -46,42 +48,44 @@ def run_and_save(arg):
     layer_size = 32
     num_layers = 2
     activation = nn.ReLU
-    env_name = "bball3-v1"
-    num_steps = int(1e5)
+    env_name = "bball3_mj-v0"
+    num_steps = int(1e6)
 
     policy = MLP(input_size, output_size*2, num_layers, layer_size, activation)
     value_fn = MLP(input_size, 1, num_layers, layer_size, activation)
     q1_fn = MLP(input_size + output_size, 1, num_layers, layer_size, activation)
     q2_fn = MLP(input_size + output_size, 1, num_layers, layer_size, activation)
 
-    env_config = {
-        'init_state': (0, 0, -pi / 2, .15, .75, 0, 0, 0, 0, 0),
-        'reward_fn': reward_fn,
-        'max_torque': 5.0,
-        'max_steps': 50
-    }
+    # env_config = {
+    #     'init_state': (0, 0, -pi / 2, .15, .75, 0, 0, 0, 0, 0),
+    #     'reward_fn': reward_fn,
+    #     'max_torque': 5.0,
+    #     'max_steps': 50
+    # }
+    env_config = {}
 
     model = SACModel(
         policy=policy,
         value_fn = value_fn,
         q1_fn = q1_fn,
         q2_fn = q2_fn,
-        act_limit = env_config['max_torque'],
+        act_limit = 1,
     )
 
 
     alg_config = {
         "env_name": env_name,
         "model": model,
-        "alpha": .05,
-        "seed": seed,
+        "alpha": .02,
+        "env_max_steps": 500,
+        "seed": int(seed),
         "exploration_steps": 1000,
         "min_steps_per_update": 500,
         "gamma": 1,
         "sgd_batch_size": 128,
         "replay_batch_size": 512,
-        "iters_per_update": 16,
-        # "iters_per_update": float('inf'),
+        #"iters_per_update": 16,
+        "iters_per_update": float('inf'),
         "env_config": env_config
     }
 
@@ -100,8 +104,6 @@ def run_and_save(arg):
         f.write(inspect.getsource(reward_fn))
 
 
-
-
 if __name__ == "__main__":
     torch.set_default_dtype(torch.float32)
     seeds = np.random.randint(0, 2**32, 8)
@@ -114,3 +116,5 @@ if __name__ == "__main__":
     seeds_and_dirs = [(seed, trial_dir) for seed in seeds]
     # results = run_and_test(run_and_test(seeds[0]))
     pool.map(run_and_save, seeds_and_dirs)
+
+    print(f"experiment complete, saved in {trial_dir}")
