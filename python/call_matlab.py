@@ -12,7 +12,7 @@ def done_criteria(state):
 
 
 env_config = {
-    'init_state' : (0, 0, 3 * pi / 4, .25, 1.0, 0, 0, 0, 0, 0),
+    'init_state': (0, 0, -pi / 2, .15, .75, 0, 0, 0, 0, 0),
     'reward_fn' : reward_fn,
 }
 
@@ -20,8 +20,8 @@ env_config = {
 env = BBall3Env(**env_config)
 env.reset()
 
-for _ in range(3):
-    obs, reward, done, obs_dict = env.step([1,1,-2])
+for _ in range(50):
+    obs, reward, done, obs_dict = env.step([-1,3,3])
     env.animate(obs_dict["tout"], obs_dict["xout"])
     if done:
         break

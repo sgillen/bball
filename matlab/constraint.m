@@ -25,11 +25,27 @@ y2cm = y1 + p2*cos(th2);
 y3 = y2 + l3*cos(th3);
 y3cm = y2 + p3*cos(th3);
 
+impLinkSlope = (y3 - y2)/(x3 - x2);
+impLinkIntercept = y3 - impLinkSlope*x3; % Check if slope is infinite
+distanceToImpLink = abs(yb - xb*impLinkSlope - impLinkIntercept)/sqrt(1 + impLinkSlope^2);
+% if yb < y2
+%     condition = "Ball below Link 2";
+%     flag = 1;
+% elseif y2 < 0
+%     condition = "Link2 below ground";
+%     flag = 1;
+% elseif y1 < 0
+%     condition = "Link1 below ground";
+%     flag = 1;
+% else
+%     flag = 0;
+%     condition = "No Failure";
+
 if yb < 0
-    %condition = "Ball below Link 2";
+    %condition = "Ball below ground";
     flag = 4;
 elseif y3 < 0
-    %condition = "Link1 below ground";
+    %condition = "Link3 below ground";
     flag = 3;
 elseif y2 < 0
     %condition = "Link2 below ground";
@@ -37,7 +53,11 @@ elseif y2 < 0
 elseif y1 < 0
     %condition = "Link1 below ground";
     flag = 1;
+elseif distanceToImpLink < rb && vby <= 0
+    flag = 5;
+    %condition = "Ball sinking in the link";
 else
     flag = 0;
     %condition = "No Failure";
+
 end

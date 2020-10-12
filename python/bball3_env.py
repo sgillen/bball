@@ -49,6 +49,8 @@ class BBall3Env(core.Env):
         self.observation_space = spaces.Box(low=low, high=-low, dtype=np.float32)
         self.action_space = spaces.Box(low=np.array([-max_torque, -max_torque, -max_torque]), high=np.array([max_torque, max_torque, max_torque]), dtype=np.float32)
 
+        self.impact_miss = 0
+
         self.max_steps = max_steps
         self.cur_step = 0
         self.reset()
@@ -67,7 +69,14 @@ class BBall3Env(core.Env):
         action = matlab.single(action.tolist())
         action.reshape((3, 1))
         tout, xout = self.eng.integrateODE(matlab.single([self.t, self.t + self.dt]), self.state, self.dt, action, nargout=2)
+
         impactState, impactTime = self.eng.detectImpact(tout, xout, nargout=2)
+
+        if np.array(xout)[-1,-1] > 0 and impactTime != -1:
+            self.impact_miss += 1
+            impactTime = -1
+            print(f"Impact miss, total for this env: {self.impact_miss}")
+            #input()
 
         if impactTime == -1:  # No contact
             self.state = matlab.single(xout[-1])
@@ -75,7 +84,7 @@ class BBall3Env(core.Env):
             # self.state.reshape((8,1))
             self.t = np.array(tout[-1]).item()
         else:
-            #print("contact!")
+            print("contact!")
             #print(impactState)
             impactState.reshape((10, 1))
             self.state = self.eng.impact(matlab.single(impactState))
@@ -84,6 +93,10 @@ class BBall3Env(core.Env):
 
         reward = self.reward_fn(np.array(self.state), action)
         done = self.eng.constraint(self.state)
+
+        # if done:
+        #     print(done)
+
 
         self.cur_step += 1
         if self.cur_step > self.max_steps:

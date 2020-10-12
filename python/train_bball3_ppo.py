@@ -17,30 +17,29 @@ import torch
 import signal
 
 num_steps = int(2e6)
-base_dir = os.path.dirname(os.path.abspath(__file__)) + "/data_ppo/"
+base_dir = os.path.dirname(os.path.abspath(__file__)) + "/data_ppo_c2/"
 print(base_dir)
 trial_name = input("Trial name: ")
 
-#
-# def reward_fn(state, action):
-#     xpen = np.clip(-(state[3] - .15)**2, -1, 0)
-#     #xpen = 0.0
-#
-#     ypen = np.clip(-(state[4] - 1.2)**2, -4, 0)
-#     #ypen = 0.0
-#
-#     alive = 5.0
-#     return xpen + ypen + alive
-#   #  return -(state[4] - 1)**2 + alive
-#
-# env_config = {
-#     'init_state': (0, 0, -pi / 2, .15, 1.2, 0, 0, 0, 0, 0),
-#     'reward_fn': reward_fn,
-#     'max_torque':  2.0,
-#     'max_steps' : 500
-# }
 
-env_config = {}
+def reward_fn(state, action):
+    xpen = np.clip(-((state[3] - .15)**2), -1, 0)
+    #xpen = 0.0
+
+    ypen = np.clip(-((state[4] - 1.2)**2), -4, 0)
+    #ypen = 0.0
+
+    alive = 6.0
+    return xpen + ypen + alive
+    #  return -(state[4] - 1)**2 + alive
+
+env_config = {
+    'init_state': (0, 0, -pi / 2, .15, 1.2, 0, 0, 0, 0, 0),
+    'reward_fn': reward_fn,
+    'max_torque':  5.0,
+    'max_steps' : 500
+}
+
 trial_dir = base_dir + trial_name + "/"
 base_ok = input("run will be saved in " + trial_dir + " ok? y/n")
 
@@ -49,11 +48,11 @@ if base_ok == "n":
 
 
 def run_stable(num_steps, save_dir):
-    env = make_vec_env(BBall3PBEnv, n_envs=2, monitor_dir=save_dir, env_kwargs=env_config)
+    env = make_vec_env(BBall3Env, n_envs=1, monitor_dir=save_dir, env_kwargs=env_config)
 
     model = PPO2(MlpPolicy,
                  env,
-                 verbose=2,
+                 verbose=1,
                  seed=int(seed),
                  # normalize = True
                  # policy = 'MlpPolicy',
