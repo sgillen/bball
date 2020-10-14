@@ -25,18 +25,26 @@ from numpy import pi
 import inspect
 
 
-base_dir = os.path.dirname(__file__) + "/data_sac/"
+base_dir = os.path.dirname(__file__) + "/data_sac_c2/"
 
 
 def reward_fn(state, action):
-    xpen = np.clip(-(state[3] - .15)**2, -1, 0)
+    xpen = np.clip(-((state[3] - .15)**2), -1, 0)
     #xpen = 0.0
 
-    ypen = np.clip(-(state[4] - 1.2)**2, -4, 0)
+    ypen = np.clip(-((state[4] - 1.2)**2), -4, 0)
     #ypen = 0.0
 
-    alive = 5.0
+    alive = 6.0
     return xpen + ypen + alive
+    #  return -(state[4] - 1)**2 + alive
+
+env_config = {
+    'init_state': (0, 0, -pi / 2, .15, 1.2, 0, 0, 0, 0, 0),
+    'reward_fn': reward_fn,
+    'max_torque':  5.0,
+    'max_steps' : 500
+}
 
 def run_and_save(arg):
     seed, save_dir = arg
@@ -69,7 +77,7 @@ def run_and_save(arg):
         value_fn = value_fn,
         q1_fn = q1_fn,
         q2_fn = q2_fn,
-        act_limit = 1,
+        act_limit = 5,
     )
 
 

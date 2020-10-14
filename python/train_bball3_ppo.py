@@ -16,7 +16,7 @@ import pickle
 import torch
 import signal
 
-num_steps = int(2e6)
+num_steps = int(8e6)
 base_dir = os.path.dirname(os.path.abspath(__file__)) + "/data_ppo_c2/"
 print(base_dir)
 trial_name = input("Trial name: ")
@@ -36,8 +36,8 @@ def reward_fn(state, action):
 env_config = {
     'init_state': (0, 0, -pi / 2, .15, 1.2, 0, 0, 0, 0, 0),
     'reward_fn': reward_fn,
-    'max_torque':  5.0,
-    'max_steps' : 500
+    'max_torque':  10.0,
+    'max_steps': 500
 }
 
 trial_dir = base_dir + trial_name + "/"

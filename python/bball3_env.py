@@ -72,7 +72,7 @@ class BBall3Env(core.Env):
 
         impactState, impactTime = self.eng.detectImpact(tout, xout, nargout=2)
 
-        if np.array(xout)[-1,-1] > 0 and impactTime != -1:
+        if np.array(xout)[-1,-1] >= 0 and impactTime != -1:
             self.impact_miss += 1
             impactTime = -1
             print(f"Impact miss, total for this env: {self.impact_miss}")
