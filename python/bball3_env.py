@@ -84,7 +84,7 @@ class BBall3Env(core.Env):
             # self.state.reshape((8,1))
             self.t = np.array(tout[-1]).item()
         else:
-            print("contact!")
+            #print("contact!")
             #print(impactState)
             impactState.reshape((10, 1))
             self.state = self.eng.impact(matlab.single(impactState))
