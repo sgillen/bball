@@ -19,29 +19,13 @@ import torch
 import signal
 
 num_steps = int(2e6)
-base_dir = os.path.dirname(os.path.abspath(__file__)) + "/data_ppo_c2/"
+base_dir = os.path.dirname(os.path.abspath(__file__)) + "/data_ppo/"
 print(base_dir)
 trial_name = input("Trial name: ")
 
 
-def reward_fn(state, action):
-    xpen = np.clip(-((state[3] - .15)**2), -1, 0)
-    #xpen = 0.0
-
-    ypen = np.clip(-((state[4] - 1.2)**2), -4, 0)
-    #ypen = 0.0
-
-    alive = 6.0
-    return xpen + ypen + alive
-    #  return -(state[4] - 1)**2 + aliveb
-
-env_config = {
-    'init_state': (0, 0, -pi / 2, .15, 1.2, 0, 0, 0, 0, 0),
-    'dt': .01,
-    'reward_fn': reward_fn,
-    'max_torque':  5.0,
-    'max_steps': 500
-}
+slope_set = [-.01, 0.0, .01]
+env_config = {"slope_set":slope_set, "random":True}
 
 trial_dir = base_dir + trial_name + "/"
 base_ok = input("run will be saved in " + trial_dir + " ok? y/n")
@@ -79,7 +63,7 @@ def run_stable(num_steps, save_dir):
         model.save(save_dir + "/model.zip")
 #        env.save(save_dir + "/vec_env.zip")
 
-
+ 
 if __name__ == "__main__":
 
     start = time.time()

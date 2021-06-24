@@ -35,7 +35,9 @@ class BBall3Env(core.Env):
                  max_steps = 100,
                  ):
 
+        print("before engine")
         self.eng = matlab.engine.start_matlab()
+        print("got here")
         self.eng.addpath(os.path.dirname(__file__) + "/../matlab/", nargout=0)
         self.max_torque = max_torque
         self.dt = dt
@@ -109,6 +111,8 @@ class BBall3Env(core.Env):
 
     def animate(self, t, x):
         self.eng.animate(t, x, nargout=0)
+    def close(self):
+        self.eng.quit()
 
 
 register("bball3-v1", entry_point=BBall3Env)
